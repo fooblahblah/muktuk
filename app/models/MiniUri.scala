@@ -7,6 +7,7 @@ case class MiniUri(id: Option[Long], uri: String)
 object Uris extends Table[MiniUri]("uris") {
   def id       = column[Long]("id", O.PrimaryKey, O.AutoInc)
   def uri      = column[String]("uri")
+  def idx      = index("idx_uri", (uri), unique = true)
   def autoInc  = id.? ~ uri <> (MiniUri, MiniUri.unapply _) returning id
   def *        = id.? ~ uri <> (MiniUri, MiniUri.unapply _)
 }

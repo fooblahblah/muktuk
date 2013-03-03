@@ -9,9 +9,13 @@ import models._
 
 object UrisDAO {
 
-  def insert(s: MiniUri): Option[MiniUri] = {
+  def store(s: MiniUri): Option[MiniUri] = {
     DB.withSession { implicit session =>
-      Some(s.copy(id = Some(Uris.autoInc.insert(s))))
+      session.withTransaction {
+        findByUri(s.uri) orElse {
+          Some(s.copy(id = Some(Uris.autoInc.insert(s))))
+        }
+      }
     }
   }
 
@@ -27,4 +31,12 @@ object UrisDAO {
     Query(Uris) list
   }
 
+  private[daos] def create(s: MiniUri)(implicit ss: Session): Option[MiniUri] = {
+    Some(s.copy(id = Some(Uris.autoInc.insert(s))))
+  }
+
+
+  private[daos] def findByUri(uri: String)(implicit ss: Session): Option[MiniUri] = {
+    Query(Uris) filter (_.uri === uri) firstOption
+  }
 }

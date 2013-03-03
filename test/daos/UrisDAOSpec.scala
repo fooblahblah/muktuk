@@ -21,20 +21,26 @@ class UrisDAOSpec extends Specification with AroundExample {
   }
 
   "shortener" should {
-    "insert MiniUri records" in {
+    "store uri records" in {
       val uri = MiniUri(None, "http://www.google.com")
-      UrisDAO.insert(uri).map(_.id) must beSome
+      UrisDAO.store(uri).map(_.id) must beSome
+    }
+
+    "store only unique uri records" in {
+      val uri    = MiniUri(None, "http://www.google.com")
+      val optUri = UrisDAO.store(uri)
+      UrisDAO.store(uri) === optUri
     }
 
     "find MiniUri record by id" in {
       val uri = MiniUri(None, "http://www.google.com")
-      val id  = UrisDAO.insert(uri).flatMap(_.id).getOrElse(sys.error("failed to insert uri"))
-      UrisDAO.findById(id) must beSome(uri.copy(id = Some(id)))
+      val id  = UrisDAO.store(uri).flatMap(_.id).getOrElse(sys.error("failed to store uri"))
+      UrisDAO.findById(id) === Some(uri.copy(id = Some(id)))
     }
 
     "list MiniUri records" in {
-      UrisDAO.insert(MiniUri(None, "http://www.google.com"))
-      UrisDAO.insert(MiniUri(None, "http://www.github.com"))
+      UrisDAO.store(MiniUri(None, "http://www.google.com"))
+      UrisDAO.store(MiniUri(None, "http://www.github.com"))
       UrisDAO.list.length === 2
     }
   }
