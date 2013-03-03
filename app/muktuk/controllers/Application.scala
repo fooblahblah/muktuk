@@ -1,13 +1,13 @@
-package controllers
+package muktuk.controllers
 
+import muktuk.daos.MiniUriDAO
+import muktuk.models.MiniUri
+import muktuk.utils.Implicits._
+import org.apache.commons.validator.routines.UrlValidator
 import play.api._
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
-import daos.UrisDAO
-import org.apache.commons.validator.routines.UrlValidator
-import models.MiniUri
-import utils.UriUtils
 
 object Application extends Controller {
   val validator = new UrlValidator(Array("http", "https", "ftp"))
@@ -23,8 +23,8 @@ object Application extends Controller {
         BadRequest("Invalid form submission. Must provide a uri."),
       uri => {
         if(validator.isValid(uri)) {
-          UrisDAO.store(MiniUri(None, uri)) map { mini =>
-            val shortUri = UriUtils.toUri(mini)
+          MiniUriDAO.store(MiniUri(None, uri)) map { mini =>
+            val shortUri = mini.toUri
             Logger.debug(shortUri)
             Redirect(routes.Application.index)
           } getOrElse(BadRequest("Unable to store uri"))
@@ -37,7 +37,7 @@ object Application extends Controller {
 
 
   def show(id: Long) = Action {
-    UrisDAO.findById(id) match {
+    MiniUriDAO.findById(id) match {
       case Some(mini) => Redirect(mini.uri)
       case _          => NotFound
     }

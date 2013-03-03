@@ -1,4 +1,4 @@
-package models
+package muktuk.models
 
 import play.api.db.slick.Config.driver.simple._
 

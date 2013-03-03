@@ -1,19 +1,26 @@
-package daos
+package muktuk.daos
 
-import models.MiniUri
-import models.MiniUri
+import java.sql.SQLException
+import muktuk.models._
 import play.api.Play.current
+import play.api.Logger
 import play.api.db.slick.Config.driver.simple._
 import play.api.db.slick.DB
-import models._
 
-object UrisDAO {
+object MiniUriDAO {
 
   def store(s: MiniUri): Option[MiniUri] = {
     DB.withSession { implicit session =>
       session.withTransaction {
-        findByUri(s.uri) orElse {
-          Some(s.copy(id = Some(Uris.autoInc.insert(s))))
+        try {
+          findByUri(s.uri) orElse {
+            Some(s.copy(id = Some(Uris.autoInc.insert(s))))
+          }
+        } catch {
+          case e: SQLException =>
+            Logger.error("Failed to store MiniUri", e)
+            session.rollback
+            None
         }
       }
     }
@@ -30,6 +37,7 @@ object UrisDAO {
   def list(): List[MiniUri] = DB.withSession { implicit session =>
     Query(Uris) list
   }
+
 
   private[daos] def create(s: MiniUri)(implicit ss: Session): Option[MiniUri] = {
     Some(s.copy(id = Some(Uris.autoInc.insert(s))))

@@ -1,4 +1,4 @@
-package controllers
+package muktuk.controllers
 
 import org.specs2.execute.AsResult
 import org.specs2.mutable.Specification
@@ -7,7 +7,7 @@ import play.api.test._
 import play.api.test.Helpers._
 import org.junit.runner.RunWith
 import org.specs2.runner.JUnitRunner
-import models.MiniUri
+import muktuk.models.MiniUri
 import play.api.mvc.Results
 
 @RunWith(classOf[JUnitRunner])
