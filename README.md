@@ -18,4 +18,4 @@ Muktuk is simple URL shortener.  It is implemented using the Play Framework (2.1
 
     sbt start
 
-1. Point your browser to: http://localhost:9000
+1. Point your browser to: <http://localhost:9000>
