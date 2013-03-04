@@ -9,12 +9,13 @@ import org.junit.runner.RunWith
 import org.specs2.runner.JUnitRunner
 import muktuk.models.MiniUri
 import play.api.mvc.Results
+import muktuk.daos.MiniUriDAO
 
 @RunWith(classOf[JUnitRunner])
 class ApplicationControllerSpec extends Specification with AroundExample {
 
   def application = FakeApplication(additionalConfiguration =
-    inMemoryDatabase() + ("logger.application" -> "DEBUG"))
+    inMemoryDatabase() + ("logger.application" -> "OFF"))
 
   def around[R : AsResult](r: => R) = {
     running(application) {
@@ -39,7 +40,9 @@ class ApplicationControllerSpec extends Specification with AroundExample {
     }
 
     "redirect to shortened uri" in {
-      true
+      MiniUriDAO.store(MiniUri(None, "http://www.fooblahblah.org"))
+      val result = route(FakeRequest(GET, "/1")).get
+      status(result) === 303
     }
   }
 }
