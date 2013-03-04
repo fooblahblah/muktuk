@@ -25,7 +25,7 @@ class ApplicationControllerSpec extends Specification with AroundExample {
   "shortener" should {
     "require uri field as non-empty, valid uri" in {
       status(route(FakeRequest(POST, "/shorten")).get) === 400
-      status(route(FakeRequest(POST, "/shorten").withFormUrlEncodedBody("uri" -> "fooblah")).get) === 400
+      status(route(FakeRequest(POST, "/shorten").withFormUrlEncodedBody("uri" -> "www.foo.org")).get) === 400
     }
 
     "store shortened uri" in {

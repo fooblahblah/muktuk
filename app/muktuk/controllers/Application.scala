@@ -12,24 +12,23 @@ import play.api.data.Forms._
 object Application extends Controller {
   val validator = new UrlValidator(Array("http", "https", "ftp"))
 
-  def index = Action {
-    Ok(views.html.index("Your new application is ready."))
+  def index(uri: Option[String] = None, error: Option[String] = None) = Action {
+    Ok(views.html.index(uri, error))
   }
 
 
   def shorten = Action { implicit request =>
     shortenerForm.bindFromRequest.fold(
       formWithErrors =>
-        BadRequest("Invalid form submission. Must provide a uri."),
+        BadRequest(views.html.index(None, Some("Invalid form submission. Must provide a uri."))),
+
       uri => {
         if(validator.isValid(uri)) {
           MiniUriDAO.store(MiniUri(None, uri)) map { mini =>
-            val shortUri = mini.toUri
-            Logger.debug(shortUri)
-            Redirect(routes.Application.index)
-          } getOrElse(BadRequest("Unable to store uri"))
+            Redirect(routes.Application.index(Some(mini.toUri)))
+          } getOrElse(BadRequest(views.html.index(None, Some("Error storing shortened uri."))))
         } else {
-          BadRequest("Invalid uri (we only support http, https and ftp protocols)")
+          BadRequest(views.html.index(None, Some("Invalid uri (we only support http, https and ftp protocols)")))
         }
       }
     )

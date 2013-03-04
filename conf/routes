@@ -3,7 +3,7 @@
 # ~~~~
 
 # Home page
-GET     /                           muktuk.controllers.Application.index
+GET     /                           muktuk.controllers.Application.index(uri: Option[String] ?= None, error: Option[String] ?= None)
 
 # Shorten POST
 POST   /shorten                     muktuk.controllers.Application.shorten
